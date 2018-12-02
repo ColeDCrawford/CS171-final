@@ -102,8 +102,13 @@ PlunderMap.prototype.initVis = function(){
 
 PlunderMap.prototype.wrangleData = function() {
 	var vis = this;
+	vis.dataGrouping = $('#map-data-grouping').val();
 
-	vis.displayData = vis.data;
+	if(vis.dataGrouping == 'individual'){
+		vis.displayData = vis.data.individualObjects;
+	} else {
+		vis.displayData = vis.data.plunders;
+	}
 
 
 	// Update the visualization
@@ -133,8 +138,23 @@ PlunderMap.prototype.updateVis = function() {
 	}
 
 	//Add plunder acts
+	console.log(vis);
+	function labelMarker(act){
+		if(vis.dataGrouping == 'plunder'){
+			var objects = [];
+			var categories = [];
+			act.objects.forEach(function(object){
+				objects.push(object.object);
+				categories.push(object.object_category);
+			})
+			return `<strong>Town</strong>: ${act.town}<br /><strong>Objects</strong>: ${objects.toString()}<br/><strong>Categories</strong>: ${categories.toString()}`;
+		} else {
+			return `<strong>Town</strong>: ${act.town}<br /><strong>Object</strong>: ${act.object}<br/><strong>Category</strong>: ${act.object_category}`
+		}
+	}
+
 	vis.displayData.forEach(function(act){
-		var popup = `<strong>Town</strong>: ${act.town}<br /><strong>Object</strong>: ${act.object}<br/><strong>Category</strong>: ${act.object_category}`;
+		var popup = labelMarker(act);
 		var icon = iconType(act);
 		var marker = L.marker(
 			[act.lat, act.lon],

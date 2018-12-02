@@ -42,6 +42,38 @@ PlunderMap.prototype.initVis = function(){
 	vis.acts = L.layerGroup().addTo(vis.map);
 
 	//Custom markers?
+	vis.markers = {};
+	L.AwesomeMarkers.Icon.prototype.options.prefix = 'fa';
+	vis.markers.furniture = L.AwesomeMarkers.icon({
+		icon: 'chair'
+	})
+	vis.markers.animal = L.AwesomeMarkers.icon({
+		icon: 'horse'
+	})
+	vis.markers.fodder = L.AwesomeMarkers.icon({
+		icon: 'wheat' //not free
+	})
+	vis.markers.container = L.AwesomeMarkers.icon({
+		icon: 'archive'
+	})
+	vis.markers.clothing = L.AwesomeMarkers.icon({
+		icon: 'tshirt'
+	})
+	vis.markers.foodstuffs = L.AwesomeMarkers.icon({
+		icon: 'utensils'
+	})
+	vis.markers.money = L.AwesomeMarkers.icon({
+		icon: 'coins'
+	})
+	vis.markers['tools and implements'] = L.AwesomeMarkers.icon({
+		icon: 'hammer'
+	})
+	vis.markers.weapons = L.AwesomeMarkers.icon({
+		icon: 'swords' //Not free
+	})
+	vis.markers.default = L.AwesomeMarkers.icon({
+		icon: 'question-circle'
+	})
 
 	vis.wrangleData();
 }
@@ -67,20 +99,30 @@ PlunderMap.prototype.wrangleData = function() {
 PlunderMap.prototype.updateVis = function() {
 	var vis = this;
 
+	function iconType(act){
+		switch(act.object_category){
+			case 'furniture': return vis.markers.furniture
+			case 'animal': return vis.markers.animal
+			case 'container': return vis.markers.container
+			case 'fodder': return vis.markers.fodder
+			case 'foodstuffs': return vis.markers.foodstuffs
+			case 'clothing': return vis.markers.clothing
+			case 'money': return vis.markers.money
+			case 'weapons': return vis.markers.weapons
+			case 'tools and implements': return vis.markers['tools and implements']
+			default: return vis.markers.default
+		}
+	}
+
 	//Add plunder acts
 	vis.displayData.forEach(function(act){
-		var popup = `<strong>Town</strong>: ${act.town}<br /><strong>Object</strong>: ${act.object}`;
-		// var icon;
-		// if(station.nbBikes == 0 || station.nbEmptyDocks == 0){
-		// 	icon = vis.redMarker;
-		// } else {
-		// 	icon = vis.greenMarker;
-		// }
+		var popup = `<strong>Town</strong>: ${act.town}<br /><strong>Object</strong>: ${act.object}<br/><strong>Category</strong>: ${act.object_category}`;
+		var icon = iconType(act);
 		var marker = L.marker(
 			[act.lat, act.lon],
-			// {
-			// 	icon: icon
-			// }
+			{
+				icon: icon
+			}
 		).bindPopup(popup);
 		vis.acts.addLayer(marker);
 	});

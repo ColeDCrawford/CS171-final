@@ -44,14 +44,29 @@ PlunderMap.prototype.initVis = function(){
 	//Custom markers?
 	vis.markers = {};
 	L.AwesomeMarkers.Icon.prototype.options.prefix = 'fa';
+	vis.customIcon = L.Icon.extend({
+		options:{
+			shadowUrl: 'js/leaflet-awesome-markers/dist/images/markers-shadow.png',
+			iconSize: [35, 45],
+      iconAnchor:   [17, 42],
+      popupAnchor: [1, -32],
+      shadowAnchor: [10, 12],
+      shadowSize: [36, 16],
+      markerColor: 'blue',
+      iconColor: 'white'
+		}
+	})
 	vis.markers.furniture = L.AwesomeMarkers.icon({
 		icon: 'chair'
 	})
 	vis.markers.animal = L.AwesomeMarkers.icon({
 		icon: 'horse'
 	})
-	vis.markers.fodder = L.AwesomeMarkers.icon({
-		icon: 'wheat' //not free
+	// vis.markers.fodder = L.AwesomeMarkers.icon({
+	// 	icon: 'wheat' //not free - FA Pro
+	// })
+	vis.markers.fodder = new vis.customIcon({
+		iconUrl: 'img/hay-marker.png'
 	})
 	vis.markers.container = L.AwesomeMarkers.icon({
 		icon: 'archive'
@@ -68,8 +83,11 @@ PlunderMap.prototype.initVis = function(){
 	vis.markers['tools and implements'] = L.AwesomeMarkers.icon({
 		icon: 'hammer'
 	})
-	vis.markers.weapons = L.AwesomeMarkers.icon({
-		icon: 'swords' //Not free
+	// vis.markers.weapons = L.AwesomeMarkers.icon({
+	// 	icon: 'swords' //Not free
+	// })
+	vis.markers.weapons = new vis.customIcon({
+		iconUrl: 'img/swords-marker.png'
 	})
 	vis.markers.default = L.AwesomeMarkers.icon({
 		icon: 'question-circle'

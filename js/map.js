@@ -68,7 +68,10 @@ PlunderMap.prototype.initVis = function(){
 	vis.markers.fodder = new vis.customIcon({
 		iconUrl: 'img/hay-marker.png'
 	})
-	vis.markers.container = L.AwesomeMarkers.icon({
+	vis.markers.linens = new vis.customIcon({
+		iconUrl: 'img/linens-marker.png'
+	})
+	vis.markers.containers = L.AwesomeMarkers.icon({
 		icon: 'archive'
 	})
 	vis.markers.clothing = L.AwesomeMarkers.icon({
@@ -123,23 +126,71 @@ PlunderMap.prototype.updateVis = function() {
 	var vis = this;
 
 	function iconType(act){
-		switch(act.object_category){
+		var category = '';
+		console.log(act);
+		if(vis.dataGrouping == 'individual'){
+			category = act.object_category;
+		} else {
+			var categories = [];
+			act.objects.forEach(function(object){
+				categories.push(object.object_category);
+			})
+			console.log(categories);
+			category = getHighestCount(countArray(categories))[0];
+			console.log(category);
+		}
+		switch(category){
 			case 'furniture': return vis.markers.furniture
 			case 'animal': return vis.markers.animal
-			case 'container': return vis.markers.container
+			case 'containers': return vis.markers.containers
 			case 'fodder': return vis.markers.fodder
 			case 'foodstuffs': return vis.markers.foodstuffs
 			case 'clothing': return vis.markers.clothing
 			case 'money': return vis.markers.money
 			case 'weapons': return vis.markers.weapons
 			case 'tools and implements': return vis.markers['tools and implements']
+			case 'linens': return vis.markers.linens
 			default: return vis.markers.default
 		}
 	}
 
-	//Add plunder acts
-	console.log(vis);
-	function labelMarker(act){
+	function getHighestCount(obj){
+		var highestVal = 0;
+		var highestKey = '';
+		for(key in obj){
+			if(obj[key] > highestVal){
+				highestVal = obj[key];
+				highestKey = key;
+			}
+		}
+		return [highestKey, highestVal]
+	}
+
+	function countArray(arr){
+		result = {};
+		arr.forEach(function(d){
+			if(!result[d]){
+				result[d] = 0
+			}
+			result[d]++;
+		})
+		return result;
+	}
+
+	function countArrToString(obj, counts=true){
+		var result = '';
+		var keys = Object.keys(obj);
+		keys.forEach(function(key){
+			if(obj[key] > 1 && counts){
+				result += (`${key} (${obj[key]}), `)
+			} else {
+				result += `${key}, `
+			}
+		})
+		return result.substr(0,result.length-2);
+	}
+
+	function getLabel(act){
 		if(vis.dataGrouping == 'plunder'){
 			var objects = [];
 			var categories = [];
@@ -147,14 +198,16 @@ PlunderMap.prototype.updateVis = function() {
 				objects.push(object.object);
 				categories.push(object.object_category);
 			})
-			return `<strong>Town</strong>: ${act.town}<br /><strong>Objects</strong>: ${objects.toString()}<br/><strong>Categories</strong>: ${categories.toString()}`;
+			return `<strong>Town</strong>: ${act.town}<br /><strong>Objects</strong>: ${countArrToString(countArray(objects))}<br/><strong>Categories</strong>: ${countArrToString(countArray(categories),false)}`;
 		} else {
 			return `<strong>Town</strong>: ${act.town}<br /><strong>Object</strong>: ${act.object}<br/><strong>Category</strong>: ${act.object_category}`
 		}
 	}
 
+	//add plunders / objects to map
+	console.log(vis);
 	vis.displayData.forEach(function(act){
-		var popup = labelMarker(act);
+		var popup = getLabel(act);
 		var icon = iconType(act);
 		var marker = L.marker(
 			[act.lat, act.lon],

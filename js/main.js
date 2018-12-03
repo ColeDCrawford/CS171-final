@@ -1,4 +1,5 @@
 //Date formatting functions
+var parseDate = d3.timeParse("%Y-%m-%d");
 
 //(1) Load data asynchronously
   queue()
@@ -26,13 +27,15 @@
       act.date_year = +act.date_year;
       act.lat = +act.lat;
       act.lon = +act.lon;
+      act.date = new Date(act.date_year, act.date_month - 1, act.date_day);
     })
 
     allData.individualObjects = debtData;
 
     //Group objects by plunder acts
     var groupedData = {};
-    debtData.forEach(function(object){
+    var debtDataCopy = JSON.parse(JSON.stringify(debtData));
+    debtDataCopy.forEach(function(object){
       groupedData[object.act_id] = groupedData[object.act_id] || object;
       var act = groupedData[object.act_id];
       act.objects = act.objects || [];
@@ -101,22 +104,23 @@
 
     console.log(allData);
 
-    //(4) Event handler(s)? If needed
-
-    //(5) Visualization instances
+    //(4) Visualization instances
     var plunderMap = new PlunderMap('map', allData, [43.837674,10.495053], 'cdc43339', 'cjp6062q814su2rp01xokpcl0', 'pk.eyJ1IjoiY2RjNDMzMzkiLCJhIjoiY2pvdTRjd2VrMTg2aDN4cWk2NDAycGI5YSJ9.kjHqMmUbP_SIwpqNq2zfBg');
+    var mapTimeline = new Timeline('map-timeline', allData);
+
+    //(5) Event handler(s)? If needed
     //Update map on UI changes
     $('#map-data-grouping').change(function(){
       plunderMap.wrangleData();
+      mapTimeline.updateVis();
     });
     $('#markercluster').change(function(){
       plunderMap.wrangleData();
+      mapTimeline.updateVis();
     });
-    $('#remove').change(function(){
-      plunderMap.acts.clearLayers();
-    })
 
     //(6) Bind event handlers? If needed
+
 
 
   }

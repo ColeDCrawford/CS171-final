@@ -9,3 +9,7 @@ Specify size of the map container for leaflet
 #markercluster {
   margin-left:0px;
 }
+path.line {
+  fill:none;
+  stroke: #000;
+}

@@ -35,9 +35,6 @@ PlunderMap.prototype.initVis = function(){
 		accessToken: vis.mapboxToken
 	}).addTo(vis.map);
 
-	//Create acts layer
-	vis.acts = L.layerGroup().addTo(vis.map);
-
 	//Custom markers?
 	vis.markers = {};
 	L.AwesomeMarkers.Icon.prototype.options.prefix = 'fa';
@@ -109,6 +106,16 @@ PlunderMap.prototype.wrangleData = function() {
 	} else {
 		vis.displayData = vis.data.plunders;
 	}
+	//Create acts layer - here rather than above because it changes based on checkbox
+	if(vis.acts){
+		vis.acts.clearLayers();
+		delete vis.acts
+	}
+	if($('#markercluster').is(':checked')){
+		vis.acts = L.markerClusterGroup().addTo(vis.map);
+	} else {
+		vis.acts = L.layerGroup().addTo(vis.map);
+	}
 
 
 	// Update the visualization
@@ -121,7 +128,8 @@ PlunderMap.prototype.wrangleData = function() {
 
 PlunderMap.prototype.updateVis = function() {
 	var vis = this;
-	console.log(`updateVis(): ${vis.dataGrouping}`)
+	console.log(`updateVis(): ${vis.dataGrouping}`);
+	vis.acts.clearLayers();
 
 	function iconType(act){
 		var category = '';
@@ -201,8 +209,6 @@ PlunderMap.prototype.updateVis = function() {
 	}
 
 	//add plunders / objects to map
-	console.log(vis);
-	vis.acts.clearLayers();
 	vis.displayData.forEach(function(act){
 		var popup = getLabel(act);
 		var icon = iconType(act);

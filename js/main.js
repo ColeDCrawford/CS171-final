@@ -105,9 +105,16 @@
 
     //(5) Visualization instances
     var plunderMap = new PlunderMap('map', allData, [43.837674,10.495053], 'cdc43339', 'cjp6062q814su2rp01xokpcl0', 'pk.eyJ1IjoiY2RjNDMzMzkiLCJhIjoiY2pvdTRjd2VrMTg2aDN4cWk2NDAycGI5YSJ9.kjHqMmUbP_SIwpqNq2zfBg');
+    //Update map on UI changes
     $('#map-data-grouping').change(function(){
-      plunderMap.updateVis();
+      plunderMap.wrangleData();
     });
+    $('#markercluster').change(function(){
+      plunderMap.wrangleData();
+    });
+    $('#remove').change(function(){
+      plunderMap.acts.clearLayers();
+    })
 
     //(6) Bind event handlers? If needed
 

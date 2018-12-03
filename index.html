@@ -13,6 +13,8 @@
 	<link rel="stylesheet" href="fonts/fontawesome/css/all.min.css">
 	<link rel="stylesheet" href="js/leaflet/leaflet.css">
 	<link rel="stylesheet" href="js/leaflet-awesome-markers/dist/leaflet.awesome-markers.css" />
+	<link rel="stylesheet" href="js/leaflet-markercluster/dist/MarkerCluster.css" />
+	<link rel="stylesheet" href="js/leaflet-markercluster/dist/MarkerCluster.Default.css" />
 
 	<!-- Custom CSS code -->
 	<link rel="stylesheet" href="css/style.css">
@@ -52,6 +54,12 @@
 							<option value="individual">Individual objects</option>
 						</select>
 					</div>
+					<div class="form-check">
+					  <input class="form-check-input" type="checkbox" value="" id="markercluster" checked>
+					  <label class="form-check-label" for="markercluster">
+					    Cluster points
+					  </label>
+					</div>
 				</form>
 			</div>
 		</div>
@@ -75,6 +83,7 @@
 	<script src="js/d3.min.js"></script>
 	<script src="js/leaflet/leaflet.js"></script>
 	<script src="js/leaflet-awesome-markers/dist/leaflet.awesome-markers.min.js"></script>
+	<script src="js/leaflet-markercluster/dist/leaflet.markercluster.js"></script>
 
 	<!-- Visualization objects -->
 	<script src="js/map.js"></script>

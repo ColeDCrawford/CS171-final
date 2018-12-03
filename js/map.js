@@ -24,9 +24,6 @@ PlunderMap = function(_parentElement, _data, _mapCenter, _mapboxUsername, _mapbo
 
 PlunderMap.prototype.initVis = function(){
   var vis = this;
-	console.log(`https://api.mapbox.com/styles/v1/${vis.mapboxUsername}/${vis.mapboxStyleId}?access_token=${vis.mapboxToken}`);
-  //vis.mapboxStyle = $.get(`https://api.mapbox.com/styles/v1/${vis.mapboxUsername}/${vis.mapboxStyleId}?access_token=${vis.mapboxToken}`);
-	//console.log(vis.mapboxStyle);
 
   //Create map
 	vis.map = L.map(vis.parentElement).setView(vis.mapCenter, 10);
@@ -124,20 +121,19 @@ PlunderMap.prototype.wrangleData = function() {
 
 PlunderMap.prototype.updateVis = function() {
 	var vis = this;
+	console.log(`updateVis(): ${vis.dataGrouping}`)
 
 	function iconType(act){
 		var category = '';
-		console.log(act);
 		if(vis.dataGrouping == 'individual'){
 			category = act.object_category;
 		} else {
-			var categories = [];
-			act.objects.forEach(function(object){
-				categories.push(object.object_category);
-			})
-			console.log(categories);
-			category = getHighestCount(countArray(categories))[0];
-			console.log(category);
+			// var categories = [];
+			// act.objects.forEach(function(object){
+			// 	categories.push(object.object_category);
+			// })
+			// category = getHighestCount(countArray(categories))[0];
+			category = act.displayCategory;
 		}
 		switch(category){
 			case 'furniture': return vis.markers.furniture
@@ -154,51 +150,51 @@ PlunderMap.prototype.updateVis = function() {
 		}
 	}
 
-	function getHighestCount(obj){
-		var highestVal = 0;
-		var highestKey = '';
-		for(key in obj){
-			if(obj[key] > highestVal){
-				highestVal = obj[key];
-				highestKey = key;
-			}
-		}
-		return [highestKey, highestVal]
-	}
-
-	function countArray(arr){
-		result = {};
-		arr.forEach(function(d){
-			if(!result[d]){
-				result[d] = 0
-			}
-			result[d]++;
-		})
-		return result;
-	}
-
-	function countArrToString(obj, counts=true){
-		var result = '';
-		var keys = Object.keys(obj);
-		keys.forEach(function(key){
-			if(obj[key] > 1 && counts){
-				result += (`${key} (${obj[key]}), `)
-			} else {
-				result += `${key}, `
-			}
-		})
-		return result.substr(0,result.length-2);
-	}
+	// function getHighestCount(obj){
+	// 	var highestVal = 0;
+	// 	var highestKey = '';
+	// 	for(key in obj){
+	// 		if(obj[key] > highestVal){
+	// 			highestVal = obj[key];
+	// 			highestKey = key;
+	// 		}
+	// 	}
+	// 	return [highestKey, highestVal]
+	// }
+	//
+	// function countArray(arr){
+	// 	result = {};
+	// 	arr.forEach(function(d){
+	// 		if(!result[d]){
+	// 			result[d] = 0
+	// 		}
+	// 		result[d]++;
+	// 	})
+	// 	return result;
+	// }
+	//
+	// function countArrToString(obj, counts=true){
+	// 	var result = '';
+	// 	var keys = Object.keys(obj);
+	// 	keys.forEach(function(key){
+	// 		if(obj[key] > 1 && counts){
+	// 			result += (`${key} (${obj[key]}), `)
+	// 		} else {
+	// 			result += `${key}, `
+	// 		}
+	// 	})
+	// 	return result.substr(0,result.length-2);
+	// }
 
 	function getLabel(act){
 		if(vis.dataGrouping == 'plunder'){
-			var objects = [];
-			var categories = [];
-			act.objects.forEach(function(object){
-				objects.push(object.object);
-				categories.push(object.object_category);
-			})
-			return `<strong>Town</strong>: ${act.town}<br /><strong>Objects</strong>: ${countArrToString(countArray(objects))}<br/><strong>Categories</strong>: ${countArrToString(countArray(categories),false)}`;
+			// var objects = [];
+			// var categories = [];
+			// act.objects.forEach(function(object){
+			// 	objects.push(object.object);
+			// 	categories.push(object.object_category);
+			// })
+			return `<strong>Town</strong>: ${act.town}<br /><strong>Objects</strong>: ${act.objectsString}<br/><strong>Categories</strong>: ${act.categoriesString}`;
 		} else {
 			return `<strong>Town</strong>: ${act.town}<br /><strong>Object</strong>: ${act.object}<br/><strong>Category</strong>: ${act.object_category}`
 		}
@@ -206,6 +202,7 @@ PlunderMap.prototype.updateVis = function() {
 
 	//add plunders / objects to map
 	console.log(vis);
+	vis.acts.clearLayers();
 	vis.displayData.forEach(function(act){
 		var popup = getLabel(act);
 		var icon = iconType(act);

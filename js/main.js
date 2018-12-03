@@ -50,12 +50,64 @@
       return groupedData[key];
     });
 
+    function getHighestCount(obj){
+  		var highestVal = 0;
+  		var highestKey = '';
+  		for(key in obj){
+  			if(obj[key] > highestVal){
+  				highestVal = obj[key];
+  				highestKey = key;
+  			}
+  		}
+  		return [highestKey, highestVal]
+  	}
+
+  	function countArray(arr){
+  		result = {};
+  		arr.forEach(function(d){
+  			if(!result[d]){
+  				result[d] = 0
+  			}
+  			result[d]++;
+  		})
+  		return result;
+  	}
+
+  	function countArrToString(obj, counts=true){
+  		var result = '';
+  		var keys = Object.keys(obj);
+  		keys.forEach(function(key){
+  			if(obj[key] > 1 && counts){
+  				result += (`${key} (${obj[key]}), `)
+  			} else {
+  				result += `${key}, `
+  			}
+  		})
+  		return result.substr(0,result.length-2);
+  	}
+
+    //create a categoriesString, objectsString, and displayCategory
+    allData.plunders.forEach(function(act){
+      var categories = [];
+      var objects = [];
+			act.objects.forEach(function(object){
+				categories.push(object.object_category);
+        objects.push(object.object);
+			})
+			act.displayCategory = getHighestCount(countArray(categories))[0];
+      act.categoriesString = countArrToString(countArray(categories),false);
+      act.objectsString = countArrToString(countArray(objects));
+    })
+
     console.log(allData);
 
     //(4) Event handler(s)? If needed
 
     //(5) Visualization instances
     var plunderMap = new PlunderMap('map', allData, [43.837674,10.495053], 'cdc43339', 'cjp6062q814su2rp01xokpcl0', 'pk.eyJ1IjoiY2RjNDMzMzkiLCJhIjoiY2pvdTRjd2VrMTg2aDN4cWk2NDAycGI5YSJ9.kjHqMmUbP_SIwpqNq2zfBg');
+    $('#map-data-grouping').change(function(){
+      plunderMap.updateVis();
+    });
 
     //(6) Bind event handlers? If needed
 
